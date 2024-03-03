@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/auth";
+
+import "google/api/annotations.proto";
+
+package auth;
+
+service Auth {
+  rpc SignUp(SignUpRequest) returns (SignUpResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/signup"
+      body: "*"
+    };
+  };
+  rpc LogIn(LogInRequest) returns (LogInResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/login"
+      body: "*"
+    };
+  };
+  rpc ChangeRole(ChangeRoleRequest) returns (ChangeRoleResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/changeRole"
+      body: "*"
+    };
+  };
+}
+
+enum Role {
+  EMPLOYEE = 0;
+  MANAGER = 1;
+  ACCOUNTANT = 2;
+  ADMIN = 3;
+}
+
+message SignUpRequest {
+  string  name = 1;
+  string email = 2;
+  string password = 3;
+  Role role = 4;
+}
+message SignUpResponse {}
+
+message LogInRequest {
+  string email = 1;
+  string password = 2;
+}
+message LogInResponse {
+  string token = 1;
+}
+
+message ChangeRoleRequest {
+  string user_id = 1;
+  Role role = 2;
+}
+message ChangeRoleResponse {}
