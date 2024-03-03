@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  tracker:
+    build: .
+    hostname: tracker
+    container_name: tracker
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    links:
+      - tracker_postgres
+    depends_on:
+      tracker_postgres:
+        condition: service_started
+    networks:
+      - my-proxy-net-tacker
+  tracker_postgres:
+    image: postgres:16-alpine
+    hostname: tracker_postgres
+    container_name: tracker_postgres
+    restart: unless-stopped
+    volumes:
+      - .postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: tracker
+      POSTGRES_USER: base
+      POSTGRES_PASSWORD: secret
+networks:
+  my-proxy-net-tacker:
+    external:
+      name: unity_network
