@@ -1,0 +1,110 @@
+###
+POST http://0.0.0.0:9011/v1/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Popug",
+  "email": "superduper5@popug.ru",
+  "password": "123",
+  "role": "EMPLOYEE"
+}
+
+<> 2024-03-03T161355.200.json
+<> 2024-03-03T161227.200.json
+<> 2024-03-03T135955.200.json
+<> 2024-03-03T133457.200.json
+
+###
+POST http://0.0.0.0:9011/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "superduper5@popug.ru",
+  "password": "123"
+}
+
+<> 2024-03-03T163121.200.json
+<> 2024-03-03T163115.401.json
+<> 2024-03-03T161414.200.json
+<> 2024-03-03T153040.200.json
+<> 2024-03-03T144324.200.json
+<> 2024-03-03T140037.200.json
+<> 2024-03-03T140025.200.json
+<> 2024-03-03T133507.200.json
+
+###
+POST http://0.0.0.0:9011/v1/auth/changeRole
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk0ODI0NTQsImlhdCI6MTcwOTQ3ODg1NCwicHVibGljX2lkIjoiNGEzN2ViOWMtMGIxNC00NDNhLTliNDctNmYzNGQ5NGYwZmFiIn0.ItLfTAgx6qEp2alvqumgI38Esmwgni3ku-BRI84Cebs
+
+{
+  "user_id": "4a37eb9c-0b14-443a-9b47-6f34d94f0fab",
+  "role": "ADMIN"
+}
+
+<> 2024-03-03T161449.200.json
+<> 2024-03-03T140714.200.json
+<> 2024-03-03T140621.200.json
+<> 2024-03-03T140212.200.json
+<> 2024-03-03T140113.500.json
+<> 2024-03-03T122921.500.json
+<> 2024-03-02T222820.500.json
+
+###
+POST http://0.0.0.0:9001/v1/task/create
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk4OTkyMzAsImlhdCI6MTcwOTg5NTYzMCwicHVibGljX2lkIjoiZjE0ZGNhMzEtNTNlMC00YmNhLTlhNWYtZGY5NDM1NmRkYjQ5In0.UdXrvQOYhoAgNjCQFh7GnEVT2Mnx8zMa5rFASDreLuA
+
+{
+  "description": "wow"
+}
+
+<> 2024-03-03T161513.200.json
+<> 2024-03-03T133540.200.json
+<> 2024-03-03T133536.200.json
+<> 2024-03-03T123329.200.json
+<> 2024-03-03T123328-1.200.json
+<> 2024-03-03T123328.200.json
+<> 2024-03-03T123318.200.json
+<> 2024-03-03T123317.200.json
+<> 2024-03-03T123315.200.json
+<> 2024-03-03T123227.200.json
+<> 2024-03-03T123219.404.json
+
+###
+POST http://0.0.0.0:9001/v1/task/reassign
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk5MDYwNzAsImlhdCI6MTcwOTkwMjQ3MCwicHVibGljX2lkIjoiMTVlZmY4ZDUtNzg4Ni00MGYyLWI3ZjQtOTIxZWQyYmY3ZWI2In0.welEw-tBT5jPv6WhEEI-Y3jQCZSB9crN4APGV3QQ1vs
+
+{}
+
+<> 2024-03-03T163023.200.json
+<> 2024-03-03T163022.200.json
+<> 2024-03-03T163009.200.json
+<> 2024-03-03T162954.200.json
+<> 2024-03-03T161531.200.json
+<> 2024-03-03T153110.200.json
+<> 2024-03-03T153032.401.json
+<> 2024-03-03T144813.200.json
+<> 2024-03-03T144803.200.json
+<> 2024-03-03T144659.500.json
+<> 2024-03-03T144439.200.json
+<> 2024-03-03T144338.200.json
+<> 2024-03-03T144310.401.json
+
+###
+POST http://0.0.0.0:9001/v1/task/complete
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk4OTk0MjEsImlhdCI6MTcwOTg5NTgyMSwicHVibGljX2lkIjoiMTVlZmY4ZDUtNzg4Ni00MGYyLWI3ZjQtOTIxZWQyYmY3ZWI2In0.u3wXz8yXLMpcaRaxyN_mkcLI3xQImRCoWc__ZCCSsho
+
+{
+    "public_id": "6fb55ad8-8c55-4b63-ae26-30302a51361e"
+}
+
+<> 2024-03-03T163205.200.json
+<> 2024-03-03T163148.500.json
+<> 2024-03-03T163018.500.json
+<> 2024-03-03T163007.500.json
+<> 2024-03-03T162918.500.json
+<> 2024-03-03T161552.200.json
+<> 2024-03-03T153231.200.json
