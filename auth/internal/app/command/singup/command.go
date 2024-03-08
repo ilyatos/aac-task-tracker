@@ -37,10 +37,10 @@ type userCreatedEvent struct {
 	Role     user.Role `json:"role"`
 }
 
-func (s *Command) Handle(ctx context.Context, userSignUpData UserSignUpData) error {
+func (s *Command) Handle(ctx context.Context, userSignUpData UserSignUpData) (uuid.UUID, error) {
 	passwordHash, err := s.hasher.Hash(userSignUpData.Password)
 	if err != nil {
-		return fmt.Errorf("hash password error: %w", err)
+		return uuid.UUID{}, fmt.Errorf("hash password error: %w", err)
 	}
 
 	newUser := repository.User{
@@ -52,9 +52,10 @@ func (s *Command) Handle(ctx context.Context, userSignUpData UserSignUpData) err
 	}
 	err = s.userRepository.Create(ctx, newUser)
 	if err != nil {
-		return fmt.Errorf("create user error: %w", err)
+		return uuid.UUID{}, fmt.Errorf("create user error: %w", err)
 	}
 
+	// TODO: outbox pattern
 	err = produceUserCreatedEvent(ctx, userCreatedEvent{
 		PublicID: newUser.PublicID,
 		Name:     newUser.Name,
@@ -62,10 +63,10 @@ func (s *Command) Handle(ctx context.Context, userSignUpData UserSignUpData) err
 		Role:     newUser.Role,
 	})
 	if err != nil {
-		return fmt.Errorf("produce user created event error: %w", err)
+		return uuid.UUID{}, fmt.Errorf("produce user created event error: %w", err)
 	}
 
-	return nil
+	return newUser.PublicID, nil
 }
 
 func produceUserCreatedEvent(ctx context.Context, userCreatedEvent userCreatedEvent) error {

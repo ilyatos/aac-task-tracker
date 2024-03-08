@@ -29,12 +29,12 @@ func New(changeRole *change_role.Command) *Handler {
 }
 
 func (h *Handler) Handle(ctx context.Context, request *auth.ChangeRoleRequest) (*auth.ChangeRoleResponse, error) {
-	userId, err := uuid.FromString(request.GetUserId())
+	publicId, err := uuid.FromString(request.GetPublicId())
 	if err != nil {
 		return &auth.ChangeRoleResponse{}, status.Error(codes.Internal, fmt.Sprintf("invalid user id: %s", err))
 	}
 
-	err = h.changeRole.Handle(ctx, userId, rpcRoleToUserRoleMap[request.GetRole()])
+	err = h.changeRole.Handle(ctx, publicId, rpcRoleToUserRoleMap[request.GetRole()])
 	if err != nil {
 		return &auth.ChangeRoleResponse{}, status.Error(codes.Internal, fmt.Sprintf("changing role failed: %s", err))
 	}

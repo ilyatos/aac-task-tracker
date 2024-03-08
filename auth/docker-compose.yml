@@ -10,7 +10,8 @@ services:
     links:
       - auth_postgres
     depends_on:
-      - auth_postgres
+      auth_postgres:
+        condition: service_started
     networks:
       - my-proxy-net
   auth_postgres:

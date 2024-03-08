@@ -8,7 +8,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/segmentio/kafka-go"
 
-	"github.com/ilyatos/aac-task-tracker/auth/internal/app/model/user"
+	user_model "github.com/ilyatos/aac-task-tracker/auth/internal/app/model/user"
 	"github.com/ilyatos/aac-task-tracker/auth/internal/app/repository"
 	"github.com/ilyatos/aac-task-tracker/auth/internal/broker"
 )
@@ -22,19 +22,19 @@ func New(userRepository *repository.UserRepository) *Command {
 }
 
 type userRoleChangedEvent struct {
-	PublicID uuid.UUID `json:"public_id"`
-	Role     user.Role `json:"role"`
+	PublicID uuid.UUID       `json:"public_id"`
+	Role     user_model.Role `json:"role"`
 }
 
 type userUpdatedEvent struct {
-	PublicID uuid.UUID `json:"public_id"`
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Role     user.Role `json:"role"`
+	PublicID uuid.UUID       `json:"public_id"`
+	Name     string          `json:"name"`
+	Email    string          `json:"email"`
+	Role     user_model.Role `json:"role"`
 }
 
-func (cr *Command) Handle(ctx context.Context, userID uuid.UUID, role user.Role) error {
-	user, err := cr.userRepository.FindByPublicID(ctx, userID)
+func (cr *Command) Handle(ctx context.Context, publicID uuid.UUID, role user_model.Role) error {
+	user, err := cr.userRepository.FindByPublicID(ctx, publicID)
 	if err != nil {
 		return fmt.Errorf("update role error: %w", err)
 	}
@@ -46,8 +46,9 @@ func (cr *Command) Handle(ctx context.Context, userID uuid.UUID, role user.Role)
 		return fmt.Errorf("update role error: %w", err)
 	}
 
+	// TODO: outbox pattern
 	err = produceUserUpdatedEvent(ctx, userUpdatedEvent{
-		PublicID: userID,
+		PublicID: publicID,
 		Name:     user.Name,
 		Email:    user.Email,
 		Role:     user.Role,
@@ -56,7 +57,8 @@ func (cr *Command) Handle(ctx context.Context, userID uuid.UUID, role user.Role)
 		return fmt.Errorf("produce user role changed event error: %w", err)
 	}
 
-	err = produceUserRoleChangedEvent(ctx, userRoleChangedEvent{PublicID: userID, Role: role})
+	// TODO: outbox pattern
+	err = produceUserRoleChangedEvent(ctx, userRoleChangedEvent{PublicID: publicID, Role: role})
 	if err != nil {
 		return fmt.Errorf("produce user role changed event error: %w", err)
 	}

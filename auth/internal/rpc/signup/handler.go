@@ -28,7 +28,7 @@ func New(signup *singup.Command) *Handler {
 }
 
 func (h *Handler) Handle(ctx context.Context, request *auth.SignUpRequest) (*auth.SignUpResponse, error) {
-	err := h.signup.Handle(ctx, singup.UserSignUpData{
+	publicID, err := h.signup.Handle(ctx, singup.UserSignUpData{
 		Name:     request.GetName(),
 		Email:    request.GetEmail(),
 		Password: request.GetPassword(),
@@ -39,5 +39,5 @@ func (h *Handler) Handle(ctx context.Context, request *auth.SignUpRequest) (*aut
 		return &auth.SignUpResponse{}, status.Error(codes.Internal, fmt.Sprintf("signup failed: %s", err))
 	}
 
-	return &auth.SignUpResponse{}, nil
+	return &auth.SignUpResponse{PublicId: publicID.String()}, nil
 }

@@ -35,12 +35,14 @@ enum Role {
 }
 
 message SignUpRequest {
-  string  name = 1;
+  string name = 1;
   string email = 2;
   string password = 3;
   Role role = 4;
 }
-message SignUpResponse {}
+message SignUpResponse {
+  string public_id = 1 [json_name = "public_id"];
+}
 
 message LogInRequest {
   string email = 1;
@@ -51,7 +53,7 @@ message LogInResponse {
 }
 
 message ChangeRoleRequest {
-  string user_id = 1;
+  string public_id = 1;
   Role role = 2;
 }
 message ChangeRoleResponse {}
