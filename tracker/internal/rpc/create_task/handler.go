@@ -17,10 +17,12 @@ func New(createTask *create_task.Command) *Handler {
 }
 
 func (h *Handler) Handle(ctx context.Context, request *tracker.CreateTaskRequest) (*tracker.CreateTaskResponse, error) {
-	err := h.createTask.Handle(ctx, request.GetDescription())
+	publicID, err := h.createTask.Handle(ctx, request.GetDescription())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create task: %w", err)
 	}
 
-	return &tracker.CreateTaskResponse{}, nil
+	return &tracker.CreateTaskResponse{
+		PublicId: publicID.String(),
+	}, nil
 }

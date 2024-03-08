@@ -29,12 +29,12 @@ func (h *Handler) Handle(ctx context.Context, request *tracker.CompleteTaskReque
 		return &tracker.CompleteTaskResponse{}, status.Error(codes.Unauthenticated, "user claims not found")
 	}
 
-	taskID, err := uuid.FromString(request.GetTaskId())
+	taskPublicID, err := uuid.FromString(request.GetPublicId())
 	if err != nil {
 		return &tracker.CompleteTaskResponse{}, status.Error(codes.Internal, fmt.Sprintf("invalid task id: %s", err))
 	}
 
-	err = h.completeTask.Handle(ctx, userClaims.PublicID, taskID)
+	err = h.completeTask.Handle(ctx, userClaims.PublicID, taskPublicID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to mark task as done: %w", err)
 	}

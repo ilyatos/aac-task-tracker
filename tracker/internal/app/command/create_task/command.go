@@ -31,13 +31,13 @@ type taskCreatedEvent struct {
 	Status       task_model.Status `json:"status"`
 }
 
-func (c *Command) Handle(ctx context.Context, description string) error {
+func (c *Command) Handle(ctx context.Context, description string) (uuid.UUID, error) {
 	users, err := c.userRepository.GetAllByRole(ctx, user_model.Employee)
 	if err != nil {
-		return fmt.Errorf("get users error: %w", err)
+		return uuid.UUID{}, fmt.Errorf("get users error: %w", err)
 	}
 	if users == nil || len(users) == 0 {
-		return fmt.Errorf("users not found")
+		return uuid.UUID{}, fmt.Errorf("users not found")
 	}
 
 	user := users[rand.Intn(len(users))]
@@ -51,15 +51,16 @@ func (c *Command) Handle(ctx context.Context, description string) error {
 
 	err = c.taskRepository.Create(ctx, newTask)
 	if err != nil {
-		return fmt.Errorf("create task error: %w", err)
+		return uuid.UUID{}, fmt.Errorf("create task error: %w", err)
 	}
 
+	// TODO: outbox pattern
 	err = produceTaskCreatedEvent(ctx, taskCreatedEvent(newTask))
 	if err != nil {
-		return fmt.Errorf("produce task created event error: %w", err)
+		return uuid.UUID{}, fmt.Errorf("produce task created event error: %w", err)
 	}
 
-	return nil
+	return newTask.PublicID, nil
 }
 
 func produceTaskCreatedEvent(ctx context.Context, taskCreatedEvent taskCreatedEvent) error {
