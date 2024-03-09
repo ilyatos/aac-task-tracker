@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1
+	github.com/ilyatos/aac-task-tracker/schema_registry v0.0.0-00010101000000-000000000000
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.5.1
@@ -12,7 +13,7 @@ require (
 	github.com/segmentio/kafka-go v0.4.47
 	google.golang.org/genproto/googleapis/api v0.0.0-20240228224816-df926f6c8641
 	google.golang.org/grpc v1.62.0
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
@@ -33,3 +34,5 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240228201840-1f18d85a4ec2 // indirect
 )
+
+replace github.com/ilyatos/aac-task-tracker/schema_registry => /Users/IlyaGoryachev/go/src/aac-task-tracker/schema_registry

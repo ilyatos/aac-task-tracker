@@ -4,10 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/segmentio/kafka-go"
+	"google.golang.org/protobuf/proto"
 
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/meta"
+	task_event "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task"
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_completed"
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_updated"
 	task_model "github.com/ilyatos/aac-task-tracker/tracker/internal/app/model/task"
 	"github.com/ilyatos/aac-task-tracker/tracker/internal/app/repository"
 	"github.com/ilyatos/aac-task-tracker/tracker/internal/broker"
@@ -19,17 +25,6 @@ type Command struct {
 
 func New(taskRepository *repository.TaskRepository) *Command {
 	return &Command{taskRepository: taskRepository}
-}
-
-type taskCompletedEvent struct {
-	PublicID uuid.UUID `json:"public_id"`
-}
-
-type taskUpdatedEvent struct {
-	PublicID     uuid.UUID         `json:"public_id"`
-	UserPublicID uuid.UUID         `json:"user_public_id"`
-	Description  string            `json:"description"`
-	Status       task_model.Status `json:"status"`
 }
 
 func (c *Command) Handle(ctx context.Context, userPublicID uuid.UUID, taskPublicID uuid.UUID) error {
@@ -51,12 +46,12 @@ func (c *Command) Handle(ctx context.Context, userPublicID uuid.UUID, taskPublic
 		return fmt.Errorf("update task error: %w", err)
 	}
 
-	err = produceTaskCompletedEvent(ctx, taskCompletedEvent{PublicID: taskPublicID})
+	err = produceTaskCompletedEvent(ctx, task)
 	if err != nil {
 		return fmt.Errorf("produce task completed event error: %w", err)
 	}
 
-	err = produceTaskUpdatedEvent(ctx, taskUpdatedEvent(*task))
+	err = produceTaskUpdatedEvent(ctx, task)
 	if err != nil {
 		return fmt.Errorf("produce task updated event error: %w", err)
 	}
@@ -64,8 +59,11 @@ func (c *Command) Handle(ctx context.Context, userPublicID uuid.UUID, taskPublic
 	return nil
 }
 
-func produceTaskCompletedEvent(ctx context.Context, taskCompletedEvent taskCompletedEvent) error {
-	taskCompleted, err := json.Marshal(taskCompletedEvent)
+func produceTaskCompletedEvent(ctx context.Context, task *repository.Task) error {
+	taskCompleted, err := proto.Marshal(&task_completed.TaskCompleted{
+		Header:  &meta.Header{Producer: "tracker.complete_task"},
+		Payload: &task_completed.TaskCompleted_V1{V1: &task_completed.V1{PublicId: task.PublicID.String()}},
+	})
 	if err != nil {
 		return err
 	}
@@ -81,8 +79,18 @@ func produceTaskCompletedEvent(ctx context.Context, taskCompletedEvent taskCompl
 	return nil
 }
 
-func produceTaskUpdatedEvent(ctx context.Context, taskUpdatedEvent taskUpdatedEvent) error {
-	taskUpdated, err := json.Marshal(taskUpdatedEvent)
+func produceTaskUpdatedEvent(ctx context.Context, task *repository.Task) error {
+	taskUpdated, err := json.Marshal(&task_updated.TaskUpdated{
+		Header: &meta.Header{Producer: "tracker.complete_task"},
+		Payload: &task_updated.TaskUpdated_V1{
+			V1: &task_updated.V1{
+				PublicId:     task.PublicID.String(),
+				UserPublicId: task.UserPublicID.String(),
+				Description:  task.Description,
+				Status:       task_event.Status(task_event.Status_value[strings.ToUpper(string(task.Status))]),
+			},
+		},
+	})
 	if err != nil {
 		return err
 	}

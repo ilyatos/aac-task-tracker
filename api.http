@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "name": "Popug",
-  "email": "superduper5@popug.ru",
+  "email": "nanopopug3@popug.ru",
   "password": "123",
   "role": "EMPLOYEE"
 }
@@ -19,7 +19,7 @@ POST http://0.0.0.0:9011/v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "superduper5@popug.ru",
+  "email": "nanopopug1@popug.ru",
   "password": "123"
 }
 
@@ -35,10 +35,10 @@ Content-Type: application/json
 ###
 POST http://0.0.0.0:9011/v1/auth/changeRole
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk0ODI0NTQsImlhdCI6MTcwOTQ3ODg1NCwicHVibGljX2lkIjoiNGEzN2ViOWMtMGIxNC00NDNhLTliNDctNmYzNGQ5NGYwZmFiIn0.ItLfTAgx6qEp2alvqumgI38Esmwgni3ku-BRI84Cebs
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk5OTM3MDcsImlhdCI6MTcwOTk5MDEwNywicHVibGljX2lkIjoiZDUyYTgwN2EtMWM5Ni00YmY1LWJjZGItMTA3YjhkYWQwMjY1In0.IP7CyOPosYutEPDhutu-edT3sLRAoi2DETLvhyy01o0
 
 {
-  "user_id": "4a37eb9c-0b14-443a-9b47-6f34d94f0fab",
+  "public_id": "d52a807a-1c96-4bf5-bcdb-107b8dad0265",
   "role": "ADMIN"
 }
 
@@ -74,7 +74,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk4OTkyMzAsImlh
 ###
 POST http://0.0.0.0:9001/v1/task/reassign
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk5MDYwNzAsImlhdCI6MTcwOTkwMjQ3MCwicHVibGljX2lkIjoiMTVlZmY4ZDUtNzg4Ni00MGYyLWI3ZjQtOTIxZWQyYmY3ZWI2In0.welEw-tBT5jPv6WhEEI-Y3jQCZSB9crN4APGV3QQ1vs
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAwMDEzMjEsImlhdCI6MTcwOTk5NzcyMSwicHVibGljX2lkIjoiZDUyYTgwN2EtMWM5Ni00YmY1LWJjZGItMTA3YjhkYWQwMjY1In0.h6JbGK3FIrlTLNS8dFE9C02TG0WDeC0Aq5q08S9IwDM
 
 {}
 

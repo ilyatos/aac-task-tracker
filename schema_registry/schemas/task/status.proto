@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task";
+
+package task;
+
+enum Status {
+  NEW = 0;
+  DONE = 1;
+}

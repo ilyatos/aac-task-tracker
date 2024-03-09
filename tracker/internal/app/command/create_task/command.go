@@ -2,13 +2,17 @@ package create_task
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"math/rand"
+	"strings"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/segmentio/kafka-go"
+	"google.golang.org/protobuf/proto"
 
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/meta"
+	task_event "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task"
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_created"
 	task_model "github.com/ilyatos/aac-task-tracker/tracker/internal/app/model/task"
 	user_model "github.com/ilyatos/aac-task-tracker/tracker/internal/app/model/user"
 	"github.com/ilyatos/aac-task-tracker/tracker/internal/app/repository"
@@ -22,13 +26,6 @@ type Command struct {
 
 func New(userRepository *repository.UserRepository, taskRepository *repository.TaskRepository) *Command {
 	return &Command{userRepository: userRepository, taskRepository: taskRepository}
-}
-
-type taskCreatedEvent struct {
-	PublicID     uuid.UUID         `json:"public_id"`
-	UserPublicID uuid.UUID         `json:"user_public_id"`
-	Description  string            `json:"description"`
-	Status       task_model.Status `json:"status"`
 }
 
 func (c *Command) Handle(ctx context.Context, description string) (uuid.UUID, error) {
@@ -55,7 +52,7 @@ func (c *Command) Handle(ctx context.Context, description string) (uuid.UUID, er
 	}
 
 	// TODO: outbox pattern
-	err = produceTaskCreatedEvent(ctx, taskCreatedEvent(newTask))
+	err = produceTaskCreatedEvent(ctx, newTask)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("produce task created event error: %w", err)
 	}
@@ -63,15 +60,27 @@ func (c *Command) Handle(ctx context.Context, description string) (uuid.UUID, er
 	return newTask.PublicID, nil
 }
 
-func produceTaskCreatedEvent(ctx context.Context, taskCreatedEvent taskCreatedEvent) error {
-	userCreatedEvent, err := json.Marshal(taskCreatedEvent)
+func produceTaskCreatedEvent(ctx context.Context, task repository.NewTask) error {
+	taskCreatedEvent, err := proto.Marshal(&task_created.TaskCreated{
+		Header: &meta.Header{
+			Producer: "tracker.create_task",
+		},
+		Payload: &task_created.TaskCreated_V1{
+			V1: &task_created.V1{
+				PublicId:     task.PublicID.String(),
+				UserPublicId: task.UserPublicID.String(),
+				Description:  task.Description,
+				Status:       task_event.Status(task_event.Status_value[strings.ToUpper(string(task.Status))]),
+			},
+		},
+	})
 	if err != nil {
 		return err
 	}
 
 	err = broker.Produce(ctx, "tasks-stream", kafka.Message{
 		Key:   []byte("TaskCreated"),
-		Value: userCreatedEvent,
+		Value: taskCreatedEvent,
 	})
 
 	return err

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "meta/header.proto";
+import "user/role.proto";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/user/user_created";
+
+package user_created;
+
+message UserCreated {
+  header.Header header = 1;
+  oneof payload {
+    V1 v1 = 2;
+  }
+}
+
+message V1 {
+  string public_id = 1;
+  string name = 2;
+  string email = 3;
+  user.Role role = 4;
+}
