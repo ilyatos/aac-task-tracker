@@ -12,6 +12,7 @@ import (
 
 	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/meta"
 	task_event "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task"
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_added"
 	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_created"
 	task_model "github.com/ilyatos/aac-task-tracker/tracker/internal/app/model/task"
 	user_model "github.com/ilyatos/aac-task-tracker/tracker/internal/app/model/user"
@@ -57,6 +58,12 @@ func (c *Command) Handle(ctx context.Context, description string) (uuid.UUID, er
 		return uuid.UUID{}, fmt.Errorf("produce task created event error: %w", err)
 	}
 
+	// TODO: outbox pattern
+	err = produceTaskAdded(ctx, newTask)
+	if err != nil {
+		return uuid.UUID{}, fmt.Errorf("produce task assigned event error: %w", err)
+	}
+
 	return newTask.PublicID, nil
 }
 
@@ -78,10 +85,30 @@ func produceTaskCreatedEvent(ctx context.Context, task repository.NewTask) error
 		return err
 	}
 
-	err = broker.Produce(ctx, "tasks-stream", kafka.Message{
+	return broker.Produce(ctx, "tasks-stream", kafka.Message{
 		Key:   []byte("TaskCreated"),
 		Value: taskCreatedEvent,
 	})
+}
 
-	return err
+func produceTaskAdded(ctx context.Context, task repository.NewTask) error {
+	taskAssigned, err := proto.Marshal(&task_added.TaskAdded{
+		Header: &meta.Header{
+			Producer: "tracker.create_task",
+		},
+		Payload: &task_added.TaskAdded_V1{
+			V1: &task_added.V1{
+				PublicId:     task.PublicID.String(),
+				UserPublicId: task.UserPublicID.String(),
+			},
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	return broker.Produce(ctx, "tasks", kafka.Message{
+		Key:   []byte("TaskAdded"),
+		Value: taskAssigned,
+	})
 }

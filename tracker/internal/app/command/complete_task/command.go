@@ -62,7 +62,7 @@ func (c *Command) Handle(ctx context.Context, userPublicID uuid.UUID, taskPublic
 func produceTaskCompletedEvent(ctx context.Context, task *repository.Task) error {
 	taskCompleted, err := proto.Marshal(&task_completed.TaskCompleted{
 		Header:  &meta.Header{Producer: "tracker.complete_task"},
-		Payload: &task_completed.TaskCompleted_V1{V1: &task_completed.V1{PublicId: task.PublicID.String()}},
+		Payload: &task_completed.TaskCompleted_V1{V1: &task_completed.V1{PublicId: task.PublicID.String(), UserPublicId: task.UserPublicID.String()}},
 	})
 	if err != nil {
 		return err
@@ -95,13 +95,8 @@ func produceTaskUpdatedEvent(ctx context.Context, task *repository.Task) error {
 		return err
 	}
 
-	err = broker.Produce(ctx, "tasks-stream", kafka.Message{
+	return broker.Produce(ctx, "tasks-stream", kafka.Message{
 		Key:   []byte("TaskUpdated"),
 		Value: taskUpdated,
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

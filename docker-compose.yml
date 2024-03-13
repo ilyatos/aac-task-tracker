@@ -66,6 +66,39 @@ services:
       timeout: 60s
       retries: 5
 
+  billing:
+    build: ./billing
+    hostname: billing
+    container_name: billing
+    ports:
+      - "9020:9000"
+      - "9021:9001"
+    links:
+      - billing_postgres
+    depends_on:
+      billing_postgres:
+        condition: service_healthy
+      broker:
+        condition: service_healthy
+  billing_postgres:
+    image: postgres:16-alpine
+    hostname: billing_postgres
+    container_name: billing_postgres
+    restart: unless-stopped
+    volumes:
+      - ./billing/.postgres:/var/lib/postgresql/data
+    ports:
+      - "5452:5432"
+    environment:
+      POSTGRES_DB: billing
+      POSTGRES_USER: base
+      POSTGRES_PASSWORD: secret
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d billing -U base" ]
+      interval: 2s
+      timeout: 60s
+      retries: 5
+
   zookeeper:
     image: confluentinc/cp-zookeeper:5.4.1
     hostname: zookeeper

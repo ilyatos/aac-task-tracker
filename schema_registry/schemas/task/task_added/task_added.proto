@@ -2,11 +2,11 @@ syntax = "proto3";
 
 import "meta/header.proto";
 
-option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_completed";
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_added";
 
-package task_completed;
+package task_added;
 
-message TaskCompleted {
+message TaskAdded {
   header.Header header = 1;
   oneof payload {
     V1 v1 = 2;

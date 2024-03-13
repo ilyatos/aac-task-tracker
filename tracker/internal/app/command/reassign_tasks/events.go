@@ -2,7 +2,6 @@ package reassign_tasks
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/segmentio/kafka-go"
@@ -39,16 +38,11 @@ func makeTaskAssignedMessage(task repository.Task) (kafka.Message, error) {
 }
 
 func produceTaskAssignedEvents(ctx context.Context, msgs []kafka.Message) error {
-	err := broker.Produce(ctx, "tasks", msgs...)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return broker.Produce(ctx, "tasks", msgs...)
 }
 
 func makeTaskUpdatedMessage(task repository.Task) (kafka.Message, error) {
-	taskUpdated, err := json.Marshal(&task_updated.TaskUpdated{
+	taskUpdated, err := proto.Marshal(&task_updated.TaskUpdated{
 		Header: &meta.Header{Producer: "tracker.complete_task"},
 		Payload: &task_updated.TaskUpdated_V1{
 			V1: &task_updated.V1{
@@ -70,10 +64,5 @@ func makeTaskUpdatedMessage(task repository.Task) (kafka.Message, error) {
 }
 
 func produceTaskUpdatedEvents(ctx context.Context, msgs []kafka.Message) error {
-	err := broker.Produce(ctx, "tasks-stream", msgs...)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return broker.Produce(ctx, "tasks-stream", msgs...)
 }

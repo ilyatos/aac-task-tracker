@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "meta/header.proto";
+import "transaction/type.proto";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/transaction/transaction_added";
+
+package transaction_added;
+
+message TransactionAdded {
+  header.Header header = 1;
+  oneof payload {
+    V1 v1 = 2;
+  }
+}
+
+message V1 {
+  string public_id = 1;
+  string user_public_id = 2;
+  transaction.Type type = 3;
+  uint64 credit = 4;
+  uint64 debit = 5;
+}

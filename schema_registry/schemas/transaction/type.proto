@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/transaction";
+
+package transaction;
+
+enum Type {
+  UNKNOWN = 0;
+  TASK_ASSIGNED = 1;
+  TASK_COMPLETED = 2;
+  PAYOUT = 3;
+}
