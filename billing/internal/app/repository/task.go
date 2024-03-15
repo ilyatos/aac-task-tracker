@@ -27,7 +27,11 @@ func NewTaskRepository(db *sqlx.DB) *TaskRepository {
 func (r *TaskRepository) Create(ctx context.Context, task Task) error {
 	_, err := r.db.NamedExecContext(
 		ctx,
-		`INSERT INTO task (public_id, user_public_id, description, credit_price, debit_price) VALUES (:public_id, :user_public_id, :description, :credit_price, :debit_price)`,
+		`
+			INSERT INTO task (public_id, user_public_id, description, credit_price, debit_price) 
+			VALUES (:public_id, :user_public_id, :description, :credit_price, :debit_price) 
+			ON CONFLICT (public_id) DO NOTHING
+			`,
 		task,
 	)
 	return err

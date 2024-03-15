@@ -43,7 +43,7 @@ func produceTaskAssignedEvents(ctx context.Context, msgs []kafka.Message) error 
 
 func makeTaskUpdatedMessage(task repository.Task) (kafka.Message, error) {
 	taskUpdated, err := proto.Marshal(&task_updated.TaskUpdated{
-		Header: &meta.Header{Producer: "tracker.complete_task"},
+		Header: &meta.Header{Producer: "tracker.reassign_tasks"},
 		Payload: &task_updated.TaskUpdated_V1{
 			V1: &task_updated.V1{
 				PublicId:     task.PublicID.String(),

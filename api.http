@@ -4,9 +4,9 @@ Content-Type: application/json
 
 {
   "name": "Popug",
-  "email": "super_popug@popug.ru",
+  "email": "super_popug4@popug.ru",
   "password": "123",
-  "role": "ADMIN"
+  "role": "EMPLOYEE"
 }
 
 <> 2024-03-03T161355.200.json
@@ -19,7 +19,7 @@ POST http://0.0.0.0:9011/v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "super_popug@popug.ru",
+  "email": "super_popug4@popug.ru",
   "password": "123"
 }
 
@@ -53,10 +53,10 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAzNTY0NjAsImlh
 ###
 POST http://0.0.0.0:9001/v1/task/create
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAzNTY0NjAsImlhdCI6MTcxMDM1Mjg2MCwicHVibGljX2lkIjoiYTNiNjFiYzYtMjdlNS00MDA2LWIzNGQtNzJlMzhlYjlkOTM1In0.NQAJsvfeJp5IvrF-lGt7aubWtRKVRcIMqIqjOksiTNc
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTA1NDMwNTEsImlhdCI6MTcxMDUzOTQ1MSwicHVibGljX2lkIjoiNmRiMWI1MjctMDMwMC00YTNhLWFiNDgtM2Q4YjdhZjA2YmMxIn0.uLbJiUJb7mr-IW_m4Y2tvpDjVRwODJ5I2ex_H_SzpEw
 
 {
-  "description": "BUM BUM BUM"
+  "description": "CHAPA CHAPA"
 }
 
 <> 2024-03-03T161513.200.json
@@ -95,10 +95,10 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAzNTc4OTQsImlh
 ###
 POST http://0.0.0.0:9001/v1/task/complete
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTAzNTM1MjIsImlhdCI6MTcxMDM0OTkyMiwicHVibGljX2lkIjoiYTMwNDRlMmMtZGExNC00N2MwLThhMzgtMWM0ZWNiNzM0OTNjIn0.LoZd3Vf0R7IF7YK53jVO1zRGeXVUp8afiO33OdrB5wc
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTA1NDM4MTYsImlhdCI6MTcxMDU0MDIxNiwicHVibGljX2lkIjoiYWExZTk3NTktZTk3MC00YTAyLWJmYjItODUxOWE2Mjg0YzVmIn0.GrNgMCI__oHg2D45oetfT8W5MIVjehPBTQ5Nhjw8HJs
 
 {
-    "public_id": "bdd73e44-f9b8-415b-968c-f61ae6abb32e"
+    "public_id": "61586c64-4759-49db-be2a-dcd599f3202d"
 }
 
 <> 2024-03-03T163205.200.json
