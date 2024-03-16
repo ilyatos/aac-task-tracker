@@ -2,16 +2,20 @@ package singup
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"strings"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/segmentio/kafka-go"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/ilyatos/aac-task-tracker/auth/internal/app/helper/password"
 	"github.com/ilyatos/aac-task-tracker/auth/internal/app/model/user"
 	"github.com/ilyatos/aac-task-tracker/auth/internal/app/repository"
 	"github.com/ilyatos/aac-task-tracker/auth/internal/broker"
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/meta"
+	user_event "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/user"
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/user/user_created"
 )
 
 type Command struct {
@@ -28,13 +32,6 @@ type UserSignUpData struct {
 	Email    string
 	Password string
 	Role     user.Role
-}
-
-type userCreatedEvent struct {
-	PublicID uuid.UUID `json:"public_id"`
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Role     user.Role `json:"role"`
 }
 
 func (s *Command) Handle(ctx context.Context, userSignUpData UserSignUpData) (uuid.UUID, error) {
@@ -56,12 +53,7 @@ func (s *Command) Handle(ctx context.Context, userSignUpData UserSignUpData) (uu
 	}
 
 	// TODO: outbox pattern
-	err = produceUserCreatedEvent(ctx, userCreatedEvent{
-		PublicID: newUser.PublicID,
-		Name:     newUser.Name,
-		Email:    newUser.Email,
-		Role:     newUser.Role,
-	})
+	err = produceUserCreatedEvent(ctx, newUser)
 	if err != nil {
 		return uuid.UUID{}, fmt.Errorf("produce user created event error: %w", err)
 	}
@@ -69,8 +61,20 @@ func (s *Command) Handle(ctx context.Context, userSignUpData UserSignUpData) (uu
 	return newUser.PublicID, nil
 }
 
-func produceUserCreatedEvent(ctx context.Context, userCreatedEvent userCreatedEvent) error {
-	userCreated, err := json.Marshal(userCreatedEvent)
+func produceUserCreatedEvent(ctx context.Context, user repository.User) error {
+	userCreated, err := proto.Marshal(&user_created.UserCreated{
+		Header: &meta.Header{
+			Producer: "auth.signup",
+		},
+		Payload: &user_created.UserCreated_V1{
+			V1: &user_created.V1{
+				PublicId: user.PublicID.String(),
+				Name:     user.Name,
+				Email:    user.Email,
+				Role:     user_event.Role(user_event.Role_value[strings.ToUpper(string(user.Role))]),
+			},
+		},
+	})
 	if err != nil {
 		return err
 	}

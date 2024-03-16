@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/meta";
+
+package header;
+
+message Header {
+  string producer = 1;
+}

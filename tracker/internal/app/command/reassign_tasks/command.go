@@ -68,27 +68,13 @@ func (c *Command) updateTasks(ctx context.Context, tasks []repository.Task, user
 			return nil, nil, fmt.Errorf("update task error: %w", err)
 		}
 
-		taskAssignedEvent, err := makeTaskAssignedMessage(
-			ctx,
-			taskAssignedEvent{
-				PublicID:     task.PublicID,
-				UserPublicID: task.UserPublicID,
-			},
-		)
+		taskAssignedEvent, err := makeTaskAssignedMessage(task)
 		taskAssignedEvents = append(taskAssignedEvents, taskAssignedEvent)
 		if err != nil {
 			return nil, nil, fmt.Errorf("make task assigned message error: %w", err)
 		}
 
-		taskUpdatedEvent, err := makeTaskUpdatedMessage(
-			ctx,
-			taskUpdatedEvent{
-				PublicID:     task.PublicID,
-				UserPublicID: task.UserPublicID,
-				Description:  task.Description,
-				Status:       task.Status,
-			},
-		)
+		taskUpdatedEvent, err := makeTaskUpdatedMessage(task)
 		taskUpdatedEvents = append(taskUpdatedEvents, taskUpdatedEvent)
 	}
 

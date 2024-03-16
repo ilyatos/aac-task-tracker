@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/analytics";
+
+import "google/api/annotations.proto";
+
+package analytics;
+
+service Analytics {
+  rpc GetMostExpensiveTask(GetMostExpensiveTaskRequest) returns (GetMostExpensiveTaskResponse) {
+    option (google.api.http) = {
+      post: "/v1/analytics/getTodayMostExpensiveTask"
+      body: "*"
+    };
+  };
+}
+
+message GetMostExpensiveTaskRequest {}
+message GetMostExpensiveTaskResponse {}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/user";
+
+package user;
+
+enum Role {
+  EMPLOYEE = 0;
+  MANAGER = 1;
+  ACCOUNTANT = 2;
+  ADMIN = 3;
+}

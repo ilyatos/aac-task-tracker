@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "meta/header.proto";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_completed";
+
+package task_completed;
+
+message TaskCompleted {
+  header.Header header = 1;
+  oneof payload {
+    V1 v1 = 2;
+  }
+}
+
+message V1 {
+  string public_id = 1;
+  string user_public_id = 2;
+}

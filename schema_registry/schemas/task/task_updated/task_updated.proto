@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "meta/header.proto";
+import "task/status.proto";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/task/task_updated";
+
+package task_updated;
+
+message TaskUpdated {
+  header.Header header = 1;
+  oneof payload {
+    V1 v1 = 2;
+  }
+}
+
+message V1 {
+  string public_id = 1;
+  string user_public_id = 2;
+  string description = 3;
+  task.Status status = 4;
+}

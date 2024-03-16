@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "meta/header.proto";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/prices/prices_created";
+
+package prices_created;
+
+message PricesCreated {
+  header.Header header = 1;
+  oneof payload {
+    V1 v1 = 2;
+  }
+}
+
+message V1 {
+  string task_public_id = 1;
+  uint64 credit = 2;
+  uint64 debit = 3;
+}

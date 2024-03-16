@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "github.com/ilyatos/aac-task-tracker/billing";
+
+import "google/api/annotations.proto";
+
+package billing;
+
+service Billing {
+  rpc GetUserBalance(GetUserBalanceRequest) returns (GetUserBalanceResponse) {
+    option (google.api.http) = {
+      post: "/v1/balance/get"
+      body: "*"
+    };
+  };
+}
+
+message GetUserBalanceRequest {}
+message GetUserBalanceResponse {
+  int64 balance = 1;
+  repeated BalanceTransaction transactions = 2;
+}
+
+message BalanceTransaction {
+  string public_id = 1;
+  string description = 2;
+  int64 credit = 3;
+  int64 debit = 4;
+}

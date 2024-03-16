@@ -2,36 +2,31 @@ package users_stream
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
 	"os"
+	"strings"
+
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/user/user_updated"
+
+	user_event "github.com/ilyatos/aac-task-tracker/schema_registry/pkg/user"
+	user_model "github.com/ilyatos/aac-task-tracker/tracker/internal/app/model/user"
 
 	uuid "github.com/satori/go.uuid"
+
+	"github.com/ilyatos/aac-task-tracker/schema_registry/pkg/user/user_created"
+
 	"github.com/segmentio/kafka-go"
+	"google.golang.org/protobuf/proto"
 
 	create_user_command "github.com/ilyatos/aac-task-tracker/tracker/internal/app/command/create_user"
 	update_user_command "github.com/ilyatos/aac-task-tracker/tracker/internal/app/command/update_user"
-	"github.com/ilyatos/aac-task-tracker/tracker/internal/app/model/user"
 )
 
 type Consumer struct {
 	reader            *kafka.Reader
 	createUserCommand *create_user_command.Command
 	updateUserCommand *update_user_command.Command
-}
-
-type userCreatedEvent struct {
-	PublicID uuid.UUID `json:"public_id"`
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Role     user.Role `json:"role"`
-}
-
-type userUpdatedEvent struct {
-	PublicID uuid.UUID `json:"public_id"`
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Role     user.Role `json:"role"`
 }
 
 func NewConsumer(createUserCommand *create_user_command.Command, updateUserCommand *update_user_command.Command) *Consumer {
@@ -60,23 +55,11 @@ func (c *Consumer) Consume() {
 
 		switch string(m.Key) {
 		case "UserCreated":
-			userCreatedEvent := userCreatedEvent{}
-			err = json.Unmarshal(m.Value, &userCreatedEvent)
-			if err != nil {
-				log.Println("failed to unmarshal message:", err)
-				continue
-			}
-
-			err = c.createUserCommand.Handle(ctx, create_user_command.CreateUserData(userCreatedEvent))
+			err = c.handleUserCreated(ctx, m.Value)
 		case "UserUpdated":
-			userUpdatedEvent := userUpdatedEvent{}
-			err = json.Unmarshal(m.Value, &userUpdatedEvent)
-			if err != nil {
-				log.Println("failed to unmarshal message:", err)
-				continue
-			}
-
-			err = c.updateUserCommand.Handle(ctx, update_user_command.UpdateUserData(userUpdatedEvent))
+			err = c.handleUserUpdated(ctx, m.Value)
+		default:
+			log.Println("unknown message key:", string(m.Key))
 		}
 
 		if err != nil {
@@ -89,4 +72,46 @@ func (c *Consumer) Consume() {
 			continue
 		}
 	}
+}
+
+func (c *Consumer) handleUserCreated(ctx context.Context, event []byte) error {
+	userCreated := user_created.UserCreated{}
+	err := proto.Unmarshal(event, &userCreated)
+	if err != nil {
+		return fmt.Errorf("unmarshal message error: %w", err)
+	}
+
+	switch userCreated.Payload.(type) {
+	case *user_created.UserCreated_V1:
+		v1 := userCreated.GetV1()
+		return c.createUserCommand.Handle(ctx, create_user_command.CreateUserData{
+			PublicID: uuid.FromStringOrNil(v1.PublicId),
+			Name:     v1.Name,
+			Email:    v1.Email,
+			Role:     user_model.Role(strings.ToLower(user_event.Role_name[int32(v1.Role)])),
+		})
+	}
+
+	return nil
+}
+
+func (c *Consumer) handleUserUpdated(ctx context.Context, event []byte) error {
+	userUpdated := user_updated.UserUpdated{}
+	err := proto.Unmarshal(event, &userUpdated)
+	if err != nil {
+		return fmt.Errorf("unmarshal message error: %w", err)
+	}
+
+	switch userUpdated.Payload.(type) {
+	case *user_updated.UserUpdated_V1:
+		v1 := userUpdated.GetV1()
+		return c.updateUserCommand.Handle(ctx, update_user_command.UpdateUserData{
+			PublicID: uuid.FromStringOrNil(v1.PublicId),
+			Name:     v1.Name,
+			Email:    v1.Email,
+			Role:     user_model.Role(strings.ToLower(user_event.Role_name[int32(v1.Role)])),
+		})
+	}
+
+	return nil
 }
